@@ -119,29 +119,28 @@ int positionFile(char * file, char * archive)
   /*parcourir jusqu'à la fin du fichier*/
 
   while(read(fd, &c, 1) > 0){
+    counter++;
     if(c == '+'){  /*'+':l'entete du nom du fichier*/
-      counter += 3; /*le nom du fichier est precedé par 2 étoiles*/
+      counter += 2; /*le nom du fichier est precedé par 2 étoiles*/
       lseek(fd, counter, SEEK_SET);/*avancer le le curseur du fichier jusqu'au nom*/
 
       /*boucle pour parcourir le nom du fichier*/
       while(!notFound){ // tant que notFound est false
 	read(fd, &c, 1);
-	printf("valeur de c lu : %c\n", c);
 	counter++;
 	/*si la lettre lu dans "file" diferente du caractere lu dans le fichier*/
 	
 	if(file[i] != c)
 	  notFound = 1;
-	if(c  == '$'){
-	  printf("la taille de i : %d\n", i);
-	  printf("la strlen de file : %d\n", strlen(file));
+	if(c  == '$'){	
 	  if(i == strlen(file)){
-	    printf("valeur de counter à retourner %d\n", counter);
-	    return (counter - strlen(file) - 3);
+	    return (counter - strlen(file) - 4);
 	  }
 	}
 	i++;
       }
+      i = 0;
+      notFound = 0;
     }
     
   }
@@ -158,7 +157,12 @@ main(int argc, char **argv)
 {
    
   int p = positionFile(argv[1], argv[2]);
-  printf("position : %d\n", p);
+    printf("position : %d\n", p);
+    /* addHeader(argv[1], argv[3]);
+  addTo(argv[1], argv[3]);
+  addHeader(argv[2], argv[3]);
+  addTo(argv[2], argv[3]);*/
+  
   return 0;
 
 }
