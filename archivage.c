@@ -49,9 +49,22 @@ void archiveList(int filesNumber, char ** filesNames)
   }
 }
 
+
   
 int main(int argc, char **argv)
 {
+  char * p;
+  int size;
   archiveList(argc, argv);
+  int fd = open(argv[argc-1], O_RDONLY);
+  p = getNextFileName(fd);
+  size = getNextFileSize(fd);
+  printf("%s\n", p);
+  printf("%d\n", size);
+  p = getNextFileName(fd);
+  size = getNextFileSize(fd);
+  printf("%s\n", p);
+  printf("%d\n", size);
+  close(fd);
   return 0;
 }

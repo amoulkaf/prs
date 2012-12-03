@@ -7,3 +7,4 @@ void makeArchive(char * file1, char * file2, char * archive);
 int positionFile(char * file, char * archive);
 int ifFolder(char * directory);
 char ** filesInFolder(char * directory);
+char * getNextFileName(int fd);
