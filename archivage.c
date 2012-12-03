@@ -8,7 +8,16 @@
 #include <string.h>
 #include <dirent.h>
 #include "outils.h"
+#include <math.h>
 
+struct dateModif{
+  int day;
+  int month;
+  int year;
+  int hour;
+  int minute;
+  int second;
+};
 
 void archiveFolder(char * directory, char * archive)
 {
@@ -50,21 +59,33 @@ void archiveList(int filesNumber, char ** filesNames)
 }
 
 
+
   
 int main(int argc, char **argv)
 {
   char * p;
   int size;
+  dateModif d;
   archiveList(argc, argv);
   int fd = open(argv[argc-1], O_RDONLY);
-  p = getNextFileName(fd);
   size = getNextFileSize(fd);
-  printf("%s\n", p);
   printf("%d\n", size);
-  p = getNextFileName(fd);
+  d = lastModifedArchive(fd);
+  printf("d->day = %d\n", d->day);
+  printf("d->month = %d\n", d->month);
+  printf("d->year = %d\n", d->year);
+  printf("d->hour = %d\n", d->hour);
+  printf("d->minute = %d\n", d->minute);
+  printf("d->second = %d\n", d->second);
   size = getNextFileSize(fd);
-  printf("%s\n", p);
   printf("%d\n", size);
+  d = lastModifedArchive(fd);
+  printf("d->day = %d\n", d->day);
+  printf("d->month = %d\n", d->month);
+  printf("d->year = %d\n", d->year);
+  printf("d->hour = %d\n", d->hour);
+  printf("d->minute = %d\n", d->minute);
+  printf("d->second = %d\n", d->second);
   close(fd);
   return 0;
 }

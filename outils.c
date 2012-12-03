@@ -11,7 +11,16 @@
 #include <dirent.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <math.h> 
 
+struct dateModif{
+  int day;
+  int month;
+  int year;
+  int hour;
+  int minute;
+  int second;
+};
 
 void addToString(char * dst, char * src)
 {
@@ -227,16 +236,18 @@ char * getNextFileName(int fd)
   char c;
   char * name = malloc(25 * sizeof(char));
   int i = 0;
-  bool found = false;
-
-  while(read(fd, &c, 1) > 0 && found == false){
+  int found = 0;
+  while(read(fd, &c, 1) > 0 && found == 0){
     if(c == '+'){
-      found = true;
-      lseek(fd, 2, SEEK_CUR);
-      while(read(fd,&c,1) && c != '$'){
+      found = 1;
+      do{
+	read(fd, &c, 1);
+      }while(c == '+');
+      do{
 	name[i] = c;
 	i++;
-      }
+      }while(read(fd,&c,1) && c != '$');
+      
     }
   }
   name[i] = '\0';
@@ -251,12 +262,71 @@ int getNextFileSize(int fd)
   int size;
   while(read(fd, &c, 1) > 0 && found == false){ 
     if(c == '$'){
-       found = true;
-       read(fd, &size, sizeof(int));
+      do{
+	read(fd, &c, 1);
+      }while(c == '$');
+      found = true;
+      lseek(fd, -1, SEEK_CUR);
+      read(fd, &size, sizeof(int));
       
     }
   }
   if(found == false)
     return -1;
   return size;
+}
+
+
+int readAndCast(int fd, int n)
+{
+  int i, j, tmp;
+  char c;
+  int res = 0;
+  int puissance;
+  for(i = 1; i <= n; i++){
+    puissance = 1;
+    read(fd, &c, 1);
+    tmp = c - '0';
+    for(j = 0; j < (n-i);j++)
+      puissance = puissance * 10;  
+    res += puissance*tmp;
+      
+  }
+  return res;
+}
+
+dateModif lastModifedArchive(int fd)
+{
+  char c;
+  dateModif date = malloc(sizeof(struct dateModif));
+  bool found = false;
+  int tmp;
+  
+  while(read(fd, &c, 1) > 0 && found == false){ 
+    if(c == ';'){
+      found = true;
+      do{
+	read(fd, &c, 1);
+      }while(c ==';');
+      /* lecture de du jour de modification*/
+      lseek(fd, -1, SEEK_CUR);
+      date->day = readAndCast(fd, 2);
+      read(fd, &c, 1); //lecture des '/'
+      /*lecture du mois de modification*/
+      date->month = readAndCast(fd, 2);
+      read(fd, &c, 1);//lecture des '/'
+      /*lecture de l'année de modification*/
+      date->year = readAndCast(fd, 4);
+      read(fd,&c,1);
+      /*lecture de l'heure de modification */
+      date->hour = readAndCast(fd, 2);
+      read(fd,&c,1);
+      /*lecture de la minute de modification */
+      date->minute = readAndCast(fd, 2);
+      read(fd,&c,1);
+      /*lecture de la seconde de modification */
+      date->second = readAndCast(fd, 2);
+      return date;
+    }
+  }
 }
