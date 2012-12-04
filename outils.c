@@ -295,6 +295,23 @@ int readAndCast(int fd, int n)
   return res;
 }
 
+char * readNextFile(int fd, int size)
+{
+  char * file = malloc(size * sizeof(int));
+  char c;
+  int i;
+  do{
+    read(fd, &c, 1);
+  }while(c == '*');
+  file[0] = c;
+  for(i = 1; i < size; i++){
+    read(fd, &c, 1);
+    file[i] = c;
+  }
+  file[i] = '\0';
+  return file;
+}
+  
 dateModif lastModifedArchive(int fd)
 {
   char c;
