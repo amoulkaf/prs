@@ -385,32 +385,42 @@ void deleteFileArchive(char * archive, char * file)
   int taille, tmp, i;
   int counter = 0;
   int rd;
-  int 
-  do {
-    printf("affichage 2\n");
+  int fileAfter = 0;
+  i = 0;
+  do { 
     f = getNextFileName(fdA);
   }while(strcmp(f, file) != 0);
-  filePosition = lseek(fdA, -2, SEEK_CUR);
+  
   do{
-    printf("affichage 3\n");
-    rd =  read(fdA, &c, 1);
-  }while(c != '+' && rd > 0);
-  printf("affichage 4\n");
-  tmp = lseek(fdA, 0, SEEK_CUR);
-  taille = lseek(fdA, 0, SEEK_END) - tmp;
-  printf("affichage 1\n");
-  lseek(fdA, tmp, SEEK_SET);
-  buff = malloc(taille * sizeof(char));
-  printf("affichage 5\n");
-  while(read(fdA, &c ,1) > 0){
-    buff[i] = c;
-    i++;
+    read(fdA, &c, 1);
+    lseek(fdA,-2, SEEK_CUR);
+  }while(c != '+');
+  filePosition = lseek(fdA, -1, SEEK_CUR);
+  
+  lseek(fdA, 3, SEEK_CUR);
+  while(read(fdA, &c, 1) > 0){
+    printf("c : %c\n", c);
+    if(c == '+')
+      break;
   }
-  printf("affichage 6\n");
-  buff[i] = '\0';
-  lseek(fdA, filePosition, SEEK_SET);
-  write(fdA, &buff, taille);
-  truncate(archive, (tmp +taille));
+
+  if(c ==  '+'){
+    tmp = lseek(fdA, 0, SEEK_CUR);
+    taille = lseek(fdA, 0, SEEK_END) - tmp - filePosition + 10;
+    lseek(fdA, tmp, SEEK_SET);
+    buff = malloc(taille * sizeof(char));
+
+    while(read(fdA, &c ,1) > 0){
+      buff[i] = c;
+      i++;
+    }
+    buff[i] = '\0';
+    lseek(fdA, filePosition, SEEK_SET);
+    write(fdA, &buff, taille);
+    truncate(archive, (tmp +taille));
+  }
+  else
+    truncate(archive, filePosition);
 }
   
   
