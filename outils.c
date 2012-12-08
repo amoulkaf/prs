@@ -22,6 +22,7 @@ struct dateModif{
   int second;
 };
 
+/*fonction pour concatener des chainde ce char*/
 void addToString(char * dst, char * src)
 {
   int i;
@@ -33,6 +34,8 @@ void addToString(char * dst, char * src)
   src[i] = '\0';
 
 }
+
+/*Prend en parametre un fichier et renvoie sa taille*/
     
 int size(char * file)
 {
@@ -42,6 +45,7 @@ int size(char * file)
   return i;
 }
 
+/*fonction qui renvoie les droits d'un fichier*/
 int permissionOfFile(char * file)
 {
   struct stat buf;
@@ -51,6 +55,7 @@ int permissionOfFile(char * file)
   return i;
 }
 
+/*Enregistre dans *date , la date de derniere modification */
 void modifiedDate(char * file, char * date)
 {
   struct stat b;
@@ -92,6 +97,7 @@ void append(char * file1, char * file2, char * dst)
   close(fd3);
 }
 
+/*fonction qui rajoute le header du ficher src dans le fichier dst*/
 void addHeader(char * src, char * dst)
 {
   int fdSrc = open(src, O_RDONLY); 
@@ -140,6 +146,7 @@ void makeArchive(char * file1, char * file2, char * archive)
   addTo(file2, archive);
 }
 
+/*fonction qui renvoie la position d'un fichier dans l'archive*/
 int positionFile(char * file, char * archive)
 {
   int count = 0;
@@ -179,6 +186,7 @@ int positionFile(char * file, char * archive)
   return -1;
 }
 
+/*Verifie si le nom passé en parametre correspond à un répértoire*/
 int ifFolder(char * directory)
 {
   DIR *rep;
@@ -202,6 +210,7 @@ int ifFolder(char * directory)
 
 }
 
+/*Compte le nombre de fichier dans un répértoire*/
 int filesCounter(char * directory)
 {
   int file_count = 0;
@@ -217,7 +226,7 @@ int filesCounter(char * directory)
   return file_count - 2;
 }
 
-
+/*Renvoie un tableau de chaine de caractere qui contient les noms des fichiers d'un repertoire*/
 char ** filesInFolder(char * directory)
 {
   DIR *rep;
@@ -262,7 +271,8 @@ char * getNextFileName(int fd)
   name[i] = '\0';
   return name;
 }
-	
+
+/*Renvoie la taille du prochain fichier trouvé dans l'archive, et place le curseur juste apres la taille*/	
       
 int getNextFileSize(int fd)
 {
@@ -286,6 +296,7 @@ int getNextFileSize(int fd)
 }
 
 
+/*li le nombre d'octets n, et les transforme en entier*/
 int readAndCast(int fd, int n)
 {
   int i, j, tmp;
@@ -304,23 +315,8 @@ int readAndCast(int fd, int n)
   return res;
 }
 
-char * readNextFile(int fd, int size)
-{
-  char * file = malloc(size * sizeof(int));
-  char c;
-  int i;
-  do{
-    read(fd, &c, 1);
-  }while(c == '*');
-  file[0] = c;
-  for(i = 1; i < size; i++){
-    read(fd, &c, 1);
-    file[i] = c;
-  }
-  file[i] = '\0';
-  return file;
-}
-  
+
+/*Renvoie une structure date, qui contient la date de derniere modification d'un fichier dans une archive, elle ne prend pas un nom de fichier en parametre, elle prend le premier fichier trouvé dans l'archive*/
 dateModif lastModifedArchive(int fd)
 {
   char c;
@@ -357,6 +353,26 @@ dateModif lastModifedArchive(int fd)
   }
 }
 
+/*renvoie le contenu du premier fichier trouvé dans une archive*/
+char * readNextFile(int fd, int size)
+{
+  char * file = malloc(size * sizeof(int));
+  char c;
+  int i;
+  do{
+    read(fd, &c, 1);
+  }while(c == '*');
+  file[0] = c;
+  for(i = 1; i < size; i++){
+    read(fd, &c, 1);
+    file[i] = c;
+  }
+  file[i] = '\0';
+  return file;
+}
+
+/*
+
 void deleteFileArchive(char * archive, char * file)
 {
   int fdF = open(file, O_RDONLY);
@@ -374,3 +390,4 @@ void deleteFileArchive(char * archive, char * file)
   filePosition = lseek(fdA, -3, SEEK_CUR);
   
   readNextFile
+*/
