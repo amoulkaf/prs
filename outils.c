@@ -374,11 +374,12 @@ char * readNextFile(int fd, int size)
 }
 
 
-
-void deleteFileArchive(char * archive, char * file)
+/*Supprime un fichier d'une archive, renvoie -1 si le fichier n'existe pas dans l'archive, et 1 sinon*/
+int deleteFileArchive(char * archive, char * file)
 {
   int fdA = open(archive, O_RDWR);
   int filePosition; /*la position du fichier qu'on veut supprimer*/
+  int fdTmp = open("tmpFile", O_RDWR | O_CREAT , 0666);
   char c;
   char * f; 
   char * buff; /*la chaine qui suit le fichier qu'on veut supprimer*/
@@ -386,41 +387,55 @@ void deleteFileArchive(char * archive, char * file)
   int counter = 0;
   int rd;
   int fileAfter = 0;
+  int nil = 0;int found = 0;
   i = 0;
   do { 
     f = getNextFileName(fdA);
-  }while(strcmp(f, file) != 0);
-  
-  do{
-    read(fdA, &c, 1);
-    lseek(fdA,-2, SEEK_CUR);
-  }while(c != '+');
-  filePosition = lseek(fdA, -1, SEEK_CUR);
-  
-  lseek(fdA, 3, SEEK_CUR);
-  while(read(fdA, &c, 1) > 0){
-    printf("c : %c\n", c);
-    if(c == '+')
-      break;
-  }
-
-  if(c ==  '+'){
-    tmp = lseek(fdA, 0, SEEK_CUR);
-    taille = lseek(fdA, 0, SEEK_END) - tmp - filePosition + 10;
-    lseek(fdA, tmp, SEEK_SET);
-    buff = malloc(taille * sizeof(char));
-
-    while(read(fdA, &c ,1) > 0){
-      buff[i] = c;
-      i++;
+    if(f != NULL)
+      if(strcmp(f, file) == 0)
+	found = 1;
+      else
+	nil = 1;
+  }while(nil == 0 && found == 0);
+  printf("nil : %d, foud : %d", nil, found);
+  if(nil == 0 && found == 1)
+  {
+    printf("entrée condition\n");
+    do{
+      read(fdA, &c, 1);
+      lseek(fdA,-2, SEEK_CUR);
+    }while(c != '+');
+    filePosition = lseek(fdA, -1, SEEK_CUR);
+    lseek(fdA, 3, SEEK_CUR);
+    while(read(fdA, &c, 1) > 0){
+      if(c == '+')
+	break;
     }
-    buff[i] = '\0';
-    lseek(fdA, filePosition, SEEK_SET);
-    write(fdA, &buff, taille);
-    truncate(archive, (tmp +taille));
+    if(c ==  '+'){
+      tmp = lseek(fdA, 0, SEEK_CUR);
+      taille = lseek(fdA, 0, SEEK_END) - tmp;
+      lseek(fdA, (tmp - 1), SEEK_SET);
+      while(read(fdA, &c ,1) > 0){
+	write(fdTmp, &c, 1);
+      }
+      lseek(fdA, filePosition, SEEK_SET);
+      lseek(fdTmp, 0, SEEK_SET);
+      while(read(fdTmp, &c, 1) > 0){
+	write(fdA, &c, 1);
+      }
+      truncate(archive, (filePosition + taille));
+    } 
+    else
+      truncate(archive, filePosition);
+    close(fdTmp);
+    unlink("tmpFile");
+    close(fdA);
+    return 0;
   }
-  else
-    truncate(archive, filePosition);
+  close(fdTmp);
+  unlink("tmpFile");
+  close(fdA);
+  return -1;
 }
   
   
