@@ -7,6 +7,7 @@
 #include <time.h>
 #include <string.h>
 #include <dirent.h>
+#include "desarchivage.h"
 #include "outils.h"
 #include <math.h>
 #include <unistd.h>
@@ -26,7 +27,7 @@ struct dateModif{
 #define True 1
 #define False 0
 
- void creationFichierArchive(char * name, char * file, int size)
+void creationFichierArchive(char * name, char * file, int size)
 {
   int fd = open(name,O_WRONLY|O_CREAT,0666);
   
@@ -36,12 +37,13 @@ struct dateModif{
   
 }
 
-bool ifDossier(char * name)
+int ifDossier(char * name)
 {
   int i;
-  for(i=0;i=sizeof(name);i++)
+  for(i=0;i<sizeof(name);i++){
     if(name[i]=='/')
       return True;
+  }
   return False;
 }
 
@@ -50,8 +52,29 @@ void creerDossierArchive(char * name)
   mkdir(name,0766);
 }
  
-void createFileInfolder(char *folder, char * file)
+int createFolders(char *path)
 {
+  char c;
+  int i = 0;
+  int fileFound = 0;
+  char directory[100];
+  int j = 0;
+  int fd;
+  while(fileFound == 0){
+    do{
+      directory[j] = path[i];
+      c = directory[j];
+      i++; j++;
+    }while(directory[j-1] != '/' && c != '\0');
+    if( c == '/')
+      fileFound = 1;
+    if(fileFound == 0)      
+      mkdir(directory,0766);     
+    else{
+      fd = open(directory, O_WRONLY | O_CREAT ,0766);
+      return fd;
+    }
+  }
   
 }
 
@@ -63,37 +86,19 @@ void extract(char * archive)
   char * name;
   dateModif date;
   char c;
-
-
-  while (read(fd,&c,1 >0)){ //test lecture possible
-
+  int i = 0;
+  int fdF;
+  while (read(fd,&c,1) >0){ //test lecture possible
     name = getNextFileName(fd);
     size = getNextFileSize(fd);
     date =lastModifedArchive(fd);
     file = readNextFile(fd,size);
-
-    if(ifDossier (name)){
-
-      creerDossierArchive(name);
-    
-    }else{
- 
-      creationFichierArchive(name,file,size);
-    
-    }
-
+    if(ifDossier(name))
+      fdF = createFolders(name);
+    else
+      fdF = open(name, O_WRONLY | O_CREAT ,0766);
+    write(fdF, &file, (strlen(file)-1));
   }
   close(fd);
-
-}
-  
-
-int main(int argc, char **argv)
-{
-
- 
-
- 
 }
 
- 

@@ -1,0 +1,80 @@
+struct dateModif * lastModifedArchive(int fd)
+{
+  char c;
+  dateModif date = malloc(sizeof(struct dateModif));
+  bool found = false;
+  int tmp;
+
+  while(read(fd, &c, 1) > 0 && found == false){ 
+    if(c == ';'){
+      found = true;
+      do{
+	read(fd, &c, 1);
+      }while(c !=';');
+      /* lecture de du jour de modification*/
+      tmp = atoi(c);
+      date->day = 10 * tmp;
+      read(fd, &c, 1);
+      tmp = atoi(c);
+      date->day += tmp;
+
+      read(fd, &c, 1); //lecture des '/'
+
+      /*lecture du mois de modification*/
+      read(fd,&c,1);
+      tmp = atoi(c);
+      date->month = 10 * tmp;
+      read(fd, &c, 1);
+      tmp = atoi(c);
+      date->month += tmp;
+
+      read(fd, &c, 1);//lecture des '/'
+
+       /*lecture de l'année de modification*/
+      read(fd,&c,1);
+      tmp = atoi(c);
+      date->year = tmp * 1000;
+      read(fd,&c,1);
+      tmp = atoi(c);
+      date->year += tmp * 100;
+      read(fd,&c,1);
+      tmp = atoi(c);
+      date->year += tmp * 10;
+      read(fd,&c,1);
+      tmp = atoi(c);
+      date->year += tmp * 1;
+      
+      read(fd,&c,1);
+
+      /*lecture de l'heure de modification */
+      read(fd,&c,1);
+      tmp = atoi(c);
+      date->hour = 10 * tmp;
+      read(fd, &c, 1);
+      tmp = atoi(c);
+      date->hour += tmp;
+      read(fd,&c,1);
+
+      /*lecture de la minute de modification */
+
+       read(fd,&c,1);
+      tmp = atoi(c);
+      date->minute = 10 * tmp;
+      read(fd, &c, 1);
+      tmp = atoi(c);
+      date->minute += tmp;
+      read(fd,&c,1);
+
+      /*lecture de la seconde de modification */
+      read(fd,&c,1);
+      tmp = atoi(c);
+      date->second = 10 * tmp;
+      read(fd, &c, 1);
+      tmp = atoi(c);
+      date->second += tmp;
+      read(fd,&c,1);
+      
+      return date;
+    }
+  }
+}

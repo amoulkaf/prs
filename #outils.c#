@@ -156,7 +156,7 @@ int positionFile(char * file, char * archive)
   int i = 0;
   int counter = 0;
   int notFound = 0;
-
+ 
   /*parcourir jusqu'à la fin du fichier*/
 
   while(read(fd, &c, 1) > 0){
