@@ -1,7 +1,7 @@
 CC=gcc                       # le compilateur (et aussi linker)
 CFLAGS=
 LDLIBS= -lm
-OBJ= outils.o archivage.o   # les objets correspondants à chaque unité de compilation
+OBJ= outils.o archivage.o desarchivage.o  # les objets correspondants à chaque unité de compilation
 EXEC=tar               # nom de l'exécutable
 
 $(EXEC):  $(OBJ)

@@ -61,20 +61,20 @@ void archiveList(int filesNumber, char ** filesNames)
 
 
   
-int main(int argc, char **argv)
-{
-  char * p;
-  int size;
-  dateModif d;
-  char * file;
-  archiveList(argc, argv);
-  int fd = open(argv[argc-1], O_RDONLY);
-  size = getNextFileSize(fd);
-  printf("%d\n", size);
-  d = lastModifedArchive(fd);
-  file = readNextFile(fd, size);
-  printf("file = %s\n", file);
-  close(fd);
-  int perm = permissionOfFile(argv[1]);
-  return 0;
-}
+/* int main(int argc, char **argv) */
+/* { */
+/*   char * p; */
+/*   int size; */
+/*   dateModif d; */
+/*   char * file; */
+/*   archiveList(argc, argv); */
+/*   int fd = open(argv[argc-1], O_RDONLY); */
+/*   size = getNextFileSize(fd); */
+/*   printf("%d\n", size); */
+/*   d = lastModifedArchive(fd); */
+/*   file = readNextFile(fd, size); */
+/*   printf("file = %s\n", file); */
+/*   close(fd); */
+/*   int perm = permissionOfFile(argv[1]); */
+/*   return 0; */
+/* } */
