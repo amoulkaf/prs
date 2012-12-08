@@ -265,11 +265,13 @@ char * getNextFileName(int fd)
 	name[i] = c;
 	i++;
       }while(read(fd,&c,1) && c != '$');
-      
     }
   }
-  name[i] = '\0';
-  return name;
+  if(found == 1){
+    name[i] = '\0';
+    return name;
+  }
+  return NULL;
 }
 
 /*Renvoie la taille du prochain fichier trouvé dans l'archive, et place le curseur juste apres la taille*/	
@@ -371,23 +373,46 @@ char * readNextFile(int fd, int size)
   return file;
 }
 
-/*
+
 
 void deleteFileArchive(char * archive, char * file)
 {
-  int fdF = open(file, O_RDONLY);
   int fdA = open(archive, O_RDWR);
-  int filePosition;
+  int filePosition; /*la position du fichier qu'on veut supprimer*/
   char c;
-  char * f;
-  
+  char * f; 
+  char * buff; /*la chaine qui suit le fichier qu'on veut supprimer*/
+  int taille, tmp, i;
+  int counter = 0;
+  int rd;
+  int 
   do {
-    f = readNextFile(int fdA);
+    printf("affichage 2\n");
+    f = getNextFileName(fdA);
   }while(strcmp(f, file) != 0);
-
+  filePosition = lseek(fdA, -2, SEEK_CUR);
   do{
-    read(
-  filePosition = lseek(fdA, -3, SEEK_CUR);
+    printf("affichage 3\n");
+    rd =  read(fdA, &c, 1);
+  }while(c != '+' && rd > 0);
+  printf("affichage 4\n");
+  tmp = lseek(fdA, 0, SEEK_CUR);
+  taille = lseek(fdA, 0, SEEK_END) - tmp;
+  printf("affichage 1\n");
+  lseek(fdA, tmp, SEEK_SET);
+  buff = malloc(taille * sizeof(char));
+  printf("affichage 5\n");
+  while(read(fdA, &c ,1) > 0){
+    buff[i] = c;
+    i++;
+  }
+  printf("affichage 6\n");
+  buff[i] = '\0';
+  lseek(fdA, filePosition, SEEK_SET);
+  write(fdA, &buff, taille);
+  truncate(archive, (tmp +taille));
+}
   
-  readNextFile
-*/
+  
+  
+
