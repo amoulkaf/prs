@@ -50,10 +50,13 @@ void creerDossierArchive(char * name)
   mkdir(name,0766);
 }
  
-int main(int argc, char **argv)
+void createFileInfolder(char *folder, char * file)
 {
+  
+}
 
-  char * archive = argv[1];
+void extract(char * archive)
+{
   int fd = open(archive,O_RDONLY);
   int size;
   char * file;
@@ -80,8 +83,17 @@ int main(int argc, char **argv)
     }
 
   }
- close(fd);
+  close(fd);
 
+}
+  
+
+int main(int argc, char **argv)
+{
+
+ 
+
+ 
 }
 
  
