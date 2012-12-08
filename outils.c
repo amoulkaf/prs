@@ -42,6 +42,15 @@ int size(char * file)
   return i;
 }
 
+int permissionOfFile(char * file)
+{
+  struct stat buf;
+  stat(file, &buf);
+  printf("octal : %o\n", buf.st_mode & 0777);
+  int i = buf.st_mode & 0777;
+  return i;
+}
+
 void modifiedDate(char * file, char * date)
 {
   struct stat b;
@@ -347,3 +356,21 @@ dateModif lastModifedArchive(int fd)
     }
   }
 }
+
+void deleteFileArchive(char * archive, char * file)
+{
+  int fdF = open(file, O_RDONLY);
+  int fdA = open(archive, O_RDWR);
+  int filePosition;
+  char c;
+  char * f;
+  
+  do {
+    f = readNextFile(int fdA);
+  }while(strcmp(f, file) != 0);
+
+  do{
+    read(
+  filePosition = lseek(fdA, -3, SEEK_CUR);
+  
+  readNextFile

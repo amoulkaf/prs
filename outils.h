@@ -13,3 +13,4 @@ char * getNextFileName(int fd);
 int readAndCast(int fd, int n);
 dateModif lastModifedArchive(int fd);
 char * readNextFile(int fd, int size);
+int permissionOfFile(char * file);

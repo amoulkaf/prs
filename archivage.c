@@ -75,5 +75,6 @@ int main(int argc, char **argv)
   file = readNextFile(fd, size);
   printf("file = %s\n", file);
   close(fd);
+  int perm = permissionOfFile(argv[1]);
   return 0;
 }
