@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <math.h> 
 #include "desarchivage.h"
+#include <unistd.h>
 
 struct dateModif{
   int day;
@@ -398,10 +399,8 @@ int deleteFileArchive(char * archive, char * file)
       else
 	nil = 1;
   }while(nil == 0 && found == 0);
-  printf("nil : %d, foud : %d", nil, found);
   if(nil == 0 && found == 1)
   {
-    printf("entrée condition\n");
     do{
       read(fdA, &c, 1);
       lseek(fdA,-2, SEEK_CUR);

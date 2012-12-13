@@ -102,3 +102,39 @@ void extract(char * archive)
   close(fd);
 }
 
+void update(char * archive, char * file)
+{
+  DIR *rep = NULL;
+  deleteFileArchive(archive, file);
+  rep = opendir(file);
+   if(rep == NULL){
+      addHeader(file, archive);
+      addTo(file, archive);
+    }
+    else
+      archiveFolder(file, archive);
+}
+
+void filesInArchive(char * archive, int files)
+{
+   int fd = open(archive,O_RDONLY);
+   int size;
+   char * file;
+   char * name;
+   dateModif date;
+   DIR *rep = NULL;
+   int i;
+   for(i = 0;i < files; i++)
+     {
+       name = getNextFileName(fd);
+       size = getNextFileSize(fd);
+       date =lastModifedArchive(fd);
+       printf("\tNom du fichier : %s\n", name);
+       printf("\ttaille du fichier : %d\n", size);
+       printf("\tDate De Derniere Modif : %d/%d/%d \t %d:%d:%d\n\n",date->day, date->month, date->year, date->hour, date->minute, date->second);
+       free(date);
+     }
+}
+
+
+  

@@ -10,6 +10,7 @@
 #include "outils.h"
 #include <math.h>
 #include "desarchivage.h"
+#include <unistd.h>
 
 struct dateModif{
   int day;
@@ -61,7 +62,33 @@ void archiveList(int filesNumber, char ** filesNames)
   
 int main(int argc, char **argv)
 {
-  //archiveList(argc, argv);
-  extract(argv[1]);
+  
+  char command [100];
+  int fd = open(argv[argc-1], O_RDONLY); 
+  char c;
+  int taille;
+  pid_t t;
+  printf("archivage du fichier\n");
+  archiveList(argc, argv);
+  printf("fichiers dans l'archive : \n");
+  filesInArchive(argv[argc-1], argc-2);
+  printf("contenu de l'archive : \n");
+  if(fork() == 0){
+    execlp("cat", "cat", argv[argc-1], NULL);
+    return 1;
+  }
+  else{
+    wait(NULL);
+    printf("\nsuppression du fichier %s de l'archive\n", argv[1]);
+    deleteFileArchive(argv[argc-1], argv[1]);
+    printf("contenu de l'archive : \n"); 
+    if(fork() == 0){
+      execlp("cat", "cat", argv[argc-1], NULL);
+      return 0;
+    }
+    wait(NULL);
+    printf("Désarchivage \n");
+  }
+ 
   return 0;
 }
